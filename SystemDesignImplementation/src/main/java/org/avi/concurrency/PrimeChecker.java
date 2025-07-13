@@ -124,6 +124,7 @@ public class PrimeChecker {
             int threadId = t;
 
             executor.submit(() -> {
+                long threadStart = System.currentTimeMillis();
                 for (int i = 2; i <= sqrtN; i++) {
                     if (isPrime[i]) {
                         int firstMultiple = ((start + i - 1) / i) * i;
@@ -132,8 +133,11 @@ public class PrimeChecker {
                         }
                     }
                 }
+                long threadEnd = System.currentTimeMillis();
                 int done = progress.incrementAndGet();
                 printProgressBar(done, totalChunks, threadId);
+                System.out.printf("🧵 Thread-%d finished chunk [%d, %d] in %d ms%n",
+                        threadId, start, end, (threadEnd - threadStart));
             });
         }
 
