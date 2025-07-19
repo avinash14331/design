@@ -47,7 +47,18 @@ public class MyBlockingQueue<E> implements BlockingQueue<Object> {
 
     @Override
     public Object poll() {
-        return null;
+        lock.lock();
+        try {
+            return (capacity == 0) ? null : dequeue();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private Object dequeue() {
+        E item = (E) queue.remove();
+        notFull.signal();
+        return item;
     }
 
     @Override
@@ -100,9 +111,7 @@ public class MyBlockingQueue<E> implements BlockingQueue<Object> {
             while (queue.isEmpty()) {
                 notEmpty.await();
             }
-            E item = (E) queue.remove();
-            notFull.signal();
-            return item;
+            return dequeue();
         } finally {
             lock.unlock();
         }
@@ -110,7 +119,18 @@ public class MyBlockingQueue<E> implements BlockingQueue<Object> {
 
     @Override
     public Object poll(long timeout, TimeUnit unit) throws InterruptedException {
-        return null;
+        long nanos = unit.toNanos(timeout);
+        lock.lockInterruptibly();
+        try {
+            while (capacity == 0) {
+                if (nanos <= 0L)
+                    return null;
+                nanos = notEmpty.awaitNanos(nanos);
+            }
+            return dequeue();
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
