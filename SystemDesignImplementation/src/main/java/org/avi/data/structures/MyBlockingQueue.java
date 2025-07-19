@@ -187,7 +187,7 @@ public class MyBlockingQueue<E> implements BlockingQueue<Object> {
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return queue.isEmpty();
     }
 
     @Override
