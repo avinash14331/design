@@ -68,7 +68,13 @@ public class MyBlockingQueue<E> implements BlockingQueue<Object> {
 
     @Override
     public Object peek() {
-        return null;
+        lock.lock();
+        try {
+            E item = (E) queue.peek();
+            return item; // null when queue is empty
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
