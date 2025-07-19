@@ -2,6 +2,8 @@ package org.avi.concurrency;
 
 import org.avi.data.structures.MyBlockingQueue;
 
+import java.util.concurrent.ArrayBlockingQueue;
+
 public class ProducerConsumer {
     public static void main(String[] args) {
         MyBlockingQueue<Object> myBlockingQueue = new MyBlockingQueue<>(5);

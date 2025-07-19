@@ -1,9 +1,6 @@
 package org.avi.data.structures;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
@@ -20,12 +17,27 @@ public class MyBlockingQueue<E> implements BlockingQueue<Object> {
     }
     @Override
     public boolean add(Object o) {
-        return false;
+        if (offer(o))
+            return true;
+        else
+            throw new IllegalStateException("Queue full");
     }
 
     @Override
     public boolean offer(Object o) {
-        return false;
+        Objects.requireNonNull(o);
+        lock.lock();
+        try {
+            if (capacity == queue.size())
+                return false;
+            else {
+                queue.add(o);
+                notEmpty.signal();
+                return true;
+            }
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
@@ -64,7 +76,21 @@ public class MyBlockingQueue<E> implements BlockingQueue<Object> {
 
     @Override
     public boolean offer(Object o, long timeout, TimeUnit unit) throws InterruptedException {
-        return false;
+        Objects.requireNonNull(o);
+        long nanos = unit.toNanos(timeout);
+        lock.lockInterruptibly();
+        try {
+            while (capacity == queue.size()) {
+                if (nanos <= 0L)
+                    return false;
+                nanos = notFull.awaitNanos(nanos);
+            }
+            queue.add(o);
+            notEmpty.signal();
+            return true;
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
