@@ -1,4 +1,4 @@
-package org.avi.data.structures;
+package org.avi.data.structures.java;
 
 import java.util.*;
 import java.util.concurrent.BlockingQueue;

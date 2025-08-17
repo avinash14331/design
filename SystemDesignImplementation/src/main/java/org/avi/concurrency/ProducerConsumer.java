@@ -1,6 +1,6 @@
 package org.avi.concurrency;
 
-import org.avi.data.structures.MyBlockingQueue;
+import org.avi.data.structures.java.MyBlockingQueue;
 
 public class ProducerConsumer {
     public static void main(String[] args) {
